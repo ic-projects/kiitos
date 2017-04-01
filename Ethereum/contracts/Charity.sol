@@ -50,34 +50,6 @@ contract Charity is usingOraclize {
 		numberOfFunds = 0;
 	}
 
-	function getFundraiserInfo1(uint id) constant returns
-	(uint8, uint, bool, uint, uint) {
-	    return (
-	    funds[id].numberOfUrls,
-	    funds[id].maxOwnerMatching,
-	    funds[id].continueRaisingOverMax,
-	    funds[id].matchingPer100Wei,
-	    funds[id].currentDonated);
-	}
-
-	function getFundraiserInfo2(uint id) constant returns
-	(uint, string, uint, address, bool) {
-	    return (
-	    funds[id].currentMatched,
-	    funds[id].name,
-	    funds[id].contributors.length,
-	    funds[id].starter,
-	    funds[id].isRunning);
-	}
-
-	function getWebsite(uint fund, uint8 web) constant returns
-	(string, uint8, uint, uint) {
-	    return (funds[fund].urls[web].url,
-	    funds[fund].urls[web].percentage,
-	    funds[fund].urls[web].amountToClaim,
-	    funds[fund].urls[web].amountClaimed);
-	}
-
 	function createFund(
 	    string name,
 	    uint matchingPer100Wei,
@@ -161,6 +133,45 @@ contract Charity is usingOraclize {
     }
 
 	/*--------------------------------------------------------------------------
+	  USER - GET FUNDRAISER INFO FUNCTIONS
+	--------------------------------------------------------------------------*/
+
+	function getFundraiserInfo1(uint id) constant returns
+	(uint8, uint, bool, uint, uint) {
+	    return (
+	    funds[id].numberOfUrls,
+	    funds[id].maxOwnerMatching,
+	    funds[id].continueRaisingOverMax,
+	    funds[id].matchingPer100Wei,
+	    funds[id].currentDonated);
+	}
+
+	function getFundraiserInfo2(uint id) constant returns
+	(uint, string, uint, address, bool) {
+	    return (
+	    funds[id].currentMatched,
+	    funds[id].name,
+	    funds[id].contributors.length,
+	    funds[id].starter,
+	    funds[id].isRunning);
+	}
+
+	function getWebsite(uint fund, uint8 web) constant returns
+	(string, uint8, uint, uint) {
+	    return (funds[fund].urls[web].url,
+	    funds[fund].urls[web].percentage,
+	    funds[fund].urls[web].amountToClaim,
+	    funds[fund].urls[web].amountClaimed);
+	}
+
+	function getContributer(uint fund, uint cid) constant returns
+	(string, uint, string) {
+	    return (funds[fund].contributors[cid].name,
+	    funds[fund].contributors[cid].amount,
+	    funds[fund].contributors[cid].message);
+	}
+
+	/*--------------------------------------------------------------------------
 	  USER - DONATION FUNCTIONS
 	--------------------------------------------------------------------------*/
 
@@ -226,7 +237,8 @@ contract Charity is usingOraclize {
 	   requests[myid] = Request(fund, web);
 	}
 
-	function stringConcat(string _a, string _b) internal constant returns (string){
+	function stringConcat(string _a, string _b) internal constant 
+	returns (string){
         bytes memory _ba = bytes(_a);
         bytes memory _bb = bytes(_b);
         string memory abcde = new string(_ba.length + _bb.length);
@@ -237,34 +249,53 @@ contract Charity is usingOraclize {
         return string(babcde);
     }
 
+    /*--------------------------------------------------------------------------
+        ORACLE FUNCTIONS
+    --------------------------------------------------------------------------*/
 
-
-
-  /*--------------------------------------------------------------------------
-    ORACLE FUNCTIONS
-  --------------------------------------------------------------------------*/
-
-  event oracleResult(bytes32 id, string result);
-  function __callback(bytes32 myid, string result) {
-    if (msg.sender != oraclize_cbAddress()) throw;
-	oracleResult(myid, result);
-
-	//if(stringEquals(result,"") {
-	//    throw;
-	//}
-	address toSend = parseAddr(result);
-	if(toSend == 0x0000000000000000000000000000000000000000) {
-	    throw;
+    event oracleResult(bytes32 id, string result);
+    function __callback(bytes32 myid, string result) {
+        if (msg.sender != oraclize_cbAddress()) {
+            throw;
+        }
+        
+    	oracleResult(myid, result);
+    
+    	if(stringEquals(result,"")) {
+    	    throw;
+    	}
+    	address toSend = parseAddr(result);
+    	if(toSend == 0x0000000000000000000000000000000000000000) {
+    	    throw;
+    	}
+    	
+    	uint tmp = funds[requests[myid].fundID].urls[requests[myid].webID]
+    	           .amountToClaim;
+    	funds[requests[myid].fundID].urls[requests[myid].webID]
+    	    .amountToClaim = 0;
+    	funds[requests[myid].fundID].urls[requests[myid].webID]
+    	    .amountClaimed += tmp;
+    
+    	if(!toSend.send(tmp)) {
+    	    funds[requests[myid].fundID].urls[requests[myid].webID]
+    	        .amountToClaim = tmp;
+    	    funds[requests[myid].fundID].urls[requests[myid].webID]
+    	        .amountClaimed -= tmp;
+    	}
+    }
+  
+  	function stringEquals(string sa, string sb) returns (bool) {
+  	    bytes memory a = bytes(sa);
+  	    bytes memory b = bytes(sb);
+		if (a.length != b.length) {
+			return false;
+		}
+		for (uint i = 0; i < a.length; i ++) {
+			if (a[i] != b[i]) {
+				return false;
+			}
+		}
+		return true;
 	}
-	uint tmp = funds[requests[myid].fundID].urls[requests[myid].webID].amountToClaim;
-	funds[requests[myid].fundID].urls[requests[myid].webID].amountToClaim = 0;
-	funds[requests[myid].fundID].urls[requests[myid].webID].amountClaimed += tmp;
-
-	if(!toSend.send(tmp)) {
-	    funds[requests[myid].fundID].urls[requests[myid].webID].amountToClaim = tmp;
-	    funds[requests[myid].fundID].urls[requests[myid].webID].amountClaimed -= tmp;
-	}
-
-  }
 
 }
