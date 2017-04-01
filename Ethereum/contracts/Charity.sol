@@ -33,6 +33,10 @@ contract Charity {
         uint amountToClaim;
         uint amountClaimed;
     }
+	
+	/*--------------------------------------------------------------------------
+	  OWNER - CREATION FUNCTIONS
+	--------------------------------------------------------------------------*/
 
     function Charity() {
 		owner = msg.sender;
@@ -66,7 +70,6 @@ contract Charity {
 	    funds[fund].urls[web].amountToClaim,
 	    funds[fund].urls[web].amountClaimed);
 	}
-
 
 	function createFund(
 	    string name,
@@ -121,6 +124,38 @@ contract Charity {
 
 	    funds[id].isRunning = true;
 	}
+	
+	/*--------------------------------------------------------------------------
+	  OWNER - EDITING FUNCTIONS
+	--------------------------------------------------------------------------*/
+	
+	function refundOwner(uint id, uint refundAmount) {
+	    if(funds[id].starter != msg.sender) {
+	        throw;
+	    }
+	    if(refundAmount > (funds[id].maxOwnerMatching 
+	                        - funds[id].currentMatched)) {
+	        throw;
+	    }
+	    
+	    funds[id].maxOwnerMatching -= refundAmount;
+	        
+	    if (!funds[id].starter.send(refundAmount)) {
+	        funds[id].maxOwnerMatching += refundAmount;
+	    }
+	}
+
+    function topUpOwner(uint id) payable {
+	    if(funds[id].starter != msg.sender) {
+	        throw;
+	    }
+	    
+	    funds[id].maxOwnerMatching += msg.value;
+    }
+	
+	/*--------------------------------------------------------------------------
+	  USER - DONATION FUNCTIONS
+	--------------------------------------------------------------------------*/
 
 	function contribute(uint id, string name, string message) payable {
 	    if(msg.value == 0) {
@@ -161,6 +196,13 @@ contract Charity {
 	    funds[id].urls[0].amountToClaim += amount - totalTaken;
 	}
 
-
     event Donation(uint amount, string fundName);
+	
+	/*--------------------------------------------------------------------------
+	  CHARITY - CLAIMING FUNCTIONS
+	--------------------------------------------------------------------------*/
+	
+	function claimWebsite(uint id) {
+	}
+    
 }
