@@ -7,7 +7,12 @@ contract Charity is usingOraclize {
 
     mapping(uint => Fundraiser) funds;
     uint public numberOfFunds;
+    mapping(bytes32 => Request) requests;
 
+    struct Request {
+        uint fundID;
+        uint8 webID;
+    }
     struct Fundraiser {
         mapping(uint8 => Website) urls;
         uint8 numberOfUrls;
@@ -204,8 +209,33 @@ contract Charity is usingOraclize {
 	  CHARITY - CLAIMING FUNCTIONS
 	--------------------------------------------------------------------------*/
 
-	function claimWebsite(uint id) {
+	function claimWebsite(uint fund, uint8 web) payable{
+	    if(msg.value != 1000000000000000) {
+	        //0.001 eth fee
+	        throw;
+	    }
+	    if(funds[fund].urls[web].amountToClaim == 0) {
+	        throw;
+	    }
+
+
+	    bytes32 myid = oraclize_query(
+	        "URL",
+	        stringConcat(funds[fund].urls[web].url,"/address.kiitos"));
+
+	   requests[myid] = Request(fund, web);
 	}
+
+	function stringConcat(string _a, string _b) internal constant returns (string){
+        bytes memory _ba = bytes(_a);
+        bytes memory _bb = bytes(_b);
+        string memory abcde = new string(_ba.length + _bb.length);
+        bytes memory babcde = bytes(abcde);
+        uint k = 0;
+        for (uint i = 0; i < _ba.length; i++) babcde[k++] = _ba[i];
+        for (i = 0; i < _bb.length; i++) babcde[k++] = _bb[i];
+        return string(babcde);
+    }
 
 
 
@@ -216,6 +246,24 @@ contract Charity is usingOraclize {
 
   event oracleResult(bytes32 id, string result);
   function __callback(bytes32 myid, string result) {
+    if (msg.sender != oraclize_cbAddress()) throw;
+	oracleResult(myid, result);
+
+	//if(stringEquals(result,"") {
+	//    throw;
+	//}
+	address toSend = parseAddr(result);
+	if(toSend == 0x0000000000000000000000000000000000000000) {
+	    throw;
+	}
+	uint tmp = funds[requests[myid].fundID].urls[requests[myid].webID].amountToClaim;
+	funds[requests[myid].fundID].urls[requests[myid].webID].amountToClaim = 0;
+	funds[requests[myid].fundID].urls[requests[myid].webID].amountClaimed += tmp;
+
+	if(!toSend.send(tmp)) {
+	    funds[requests[myid].fundID].urls[requests[myid].webID].amountToClaim = tmp;
+	    funds[requests[myid].fundID].urls[requests[myid].webID].amountClaimed -= tmp;
+	}
 
   }
 
