@@ -13,7 +13,7 @@ contract Charity is usingOraclize {
         uint fundID;
         uint8 webID;
     }
-    
+
     struct Fundraiser {
         mapping(uint8 => Website) urls;
         uint8 numberOfUrls;
@@ -67,6 +67,7 @@ contract Charity is usingOraclize {
         funds[numberOfFunds].continueRaisingOverMax = continueRaisingOverMax;
 
         numberOfFunds++;
+        FundCreated(msg.sender, name);
     }
 
     function addWebsiteToFund(uint id, string url, uint8 percentage) {
@@ -83,6 +84,7 @@ contract Charity is usingOraclize {
         funds[id].urls[funds[id].numberOfUrls].url = url;
         funds[id].urls[funds[id].numberOfUrls].percentage = percentage;
         funds[id].numberOfUrls++;
+        WebsiteAdded(msg.sender, funds[id].name, url);
     }
 
     function startFund(uint id) {
@@ -103,6 +105,7 @@ contract Charity is usingOraclize {
 
 
         funds[id].isRunning = true;
+        FundStarted(msg.sender, funds[id].name);
     }
 
 /*------------------------------------------------------------------------------
@@ -122,6 +125,8 @@ contract Charity is usingOraclize {
 
         if (!funds[id].starter.send(refundAmount)) {
             funds[id].maxOwnerMatching += refundAmount;
+        } else {
+            RefundFund(msg.sender, funds[id].name , refundAmount);
         }
     }
 
@@ -131,6 +136,7 @@ contract Charity is usingOraclize {
         }
 
         funds[id].maxOwnerMatching += msg.value;
+        TopUpFund(msg.sender, funds[id].name , msg.value);
     }
 
 /*------------------------------------------------------------------------------
@@ -180,7 +186,7 @@ contract Charity is usingOraclize {
         if(msg.value == 0) {
             throw;
         }
-        if(funds[id].isRunning) {
+        if(!funds[id].isRunning) {
             throw;
         }
         if(!funds[id].continueRaisingOverMax &&
@@ -215,7 +221,7 @@ contract Charity is usingOraclize {
         funds[id].urls[0].amountToClaim += amount - totalTaken;
     }
 
-    event Donation(uint amount, string fundName);
+
 
 /*------------------------------------------------------------------------------
     CHARITY - CLAIMING FUNCTIONS
@@ -238,7 +244,7 @@ contract Charity is usingOraclize {
        requests[myid] = Request(fund, web);
     }
 
-    function stringConcat(string _a, string _b) internal constant 
+    function stringConcat(string _a, string _b) internal constant
     returns (string){
         bytes memory _ba = bytes(_a);
         bytes memory _bb = bytes(_b);
@@ -259,9 +265,9 @@ contract Charity is usingOraclize {
         if (msg.sender != oraclize_cbAddress()) {
             throw;
         }
-        
+
         oracleResult(myid, result);
-    
+
         if(stringEquals(result,"")) {
             throw;
         }
@@ -269,14 +275,14 @@ contract Charity is usingOraclize {
         if(toSend == 0x0000000000000000000000000000000000000000) {
             throw;
         }
-        
+
         uint tmp = funds[requests[myid].fundID].urls[requests[myid].webID]
                    .amountToClaim;
         funds[requests[myid].fundID].urls[requests[myid].webID]
             .amountToClaim = 0;
         funds[requests[myid].fundID].urls[requests[myid].webID]
             .amountClaimed += tmp;
-    
+
         if(!toSend.send(tmp)) {
             funds[requests[myid].fundID].urls[requests[myid].webID]
                 .amountToClaim = tmp;
@@ -284,7 +290,7 @@ contract Charity is usingOraclize {
                 .amountClaimed -= tmp;
         }
     }
-  
+
       function stringEquals(string sa, string sb) returns (bool) {
           bytes memory a = bytes(sa);
           bytes memory b = bytes(sb);
@@ -299,4 +305,11 @@ contract Charity is usingOraclize {
         return true;
     }
 
+
+    event Donation(uint amount, string fundName);
+    event FundCreated(address starter, string name);
+    event WebsiteAdded(address starter, string name, string url);
+    event FundStarted(address starter, string name);
+    event TopUpFund(address starter, string name, uint amount);
+    event RefundFund(address starter, string name, uint amount);
 }
