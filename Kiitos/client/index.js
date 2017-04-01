@@ -1,5 +1,8 @@
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
+import './contribute.js';
+import './create.js';
+import './home.js';
 
 abi = [
   {
@@ -505,7 +508,7 @@ function updateFundraisers() {
 
     // Build up the list of RevealedBets objects
     for (i = 0; i < parseInt(result); i++) {
-      contractInstance.getRevBetIndex(i, function (error, result2) {
+      contractInstance.getRevBetIndex(i, function(error, result2) {
         if (error) {
           console.log("Error: " + error);
           return;
