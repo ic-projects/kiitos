@@ -4,7 +4,7 @@ import './contribute.js';
 import './create.js';
 import './home.js';
 
-abi = [
+abi =  [
   {
     "constant": true,
     "inputs": [
@@ -30,6 +30,14 @@ abi = [
       {
         "name": "",
         "type": "string"
+      },
+      {
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "name": "",
+        "type": "uint256"
       }
     ],
     "payable": false,
@@ -81,6 +89,10 @@ abi = [
       {
         "name": "",
         "type": "bool"
+      },
+      {
+        "name": "",
+        "type": "uint256"
       }
     ],
     "payable": false,
@@ -191,6 +203,10 @@ abi = [
       {
         "name": "",
         "type": "uint256"
+      },
+      {
+        "name": "",
+        "type": "uint256"
       }
     ],
     "payable": false,
@@ -251,6 +267,14 @@ abi = [
       {
         "name": "",
         "type": "uint8"
+      },
+      {
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "name": "",
+        "type": "uint256"
       },
       {
         "name": "",
@@ -505,19 +529,21 @@ function updateFundraisers() {
     console.log(result);
     for (i = 0; i < parseInt(result); i++) {
       //Get each Fundraiser
+      console.log(i)
       contractInstance.getFundraiserInfo1(i, function(error, result2) {
         if (error) {
           console.log("Error: " + error);
           return;
         }
-        contractInstance.getFundraiserInfo2(i, function(error, result3) {
+        
+        contractInstance.getFundraiserInfo2(parseInt(result2[5]), function(error, result3) {
           if (error) {
             console.log("Error: " + error);
             return;
           }
 
           Fundraisers.insert({
-            no: i,
+            no: parseInt(result3[5]),
             numberOfUrls: parseInt(result2[0]),
             maxOwnerMatching: web3.fromWei(parseInt(result2[1]), 'ether'),
             continueRaisingOverMax: Boolean(result2[2]),
@@ -534,36 +560,39 @@ function updateFundraisers() {
 
           //Build a list of websites
           for (i2 = 0; i2 < parseInt(result2[0]); i2++) {
-            contractInstance.getWebsite(i, i2, function (error, result4) {
+            contractInstance.getWebsite(parseInt(result2[5]), i2, function (error, result4) {
               if (error) {
                 console.log("Error: " + error);
                 return;
               }
-              console.log(result4);
-              
-              Fundraisers.findOne({"no": i}).websites.push({
-                no: i2,
-                url: result4[0],
-                percentage: parseInt(result4[1]),
-                amountToClaim:  parseInt(result4[2]),
-                amountClaimed:  parseInt(result4[3])
-              });
+
+              Fundraisers.update({ "no": parseInt(result4[4]) },
+                { $push: { websites: {
+                  no: parseInt(result4[5]),
+                  url: result4[0],
+                  percentage: parseInt(result4[1]),
+                  amountToClaim:  parseInt(result4[2]),
+                  amountClaimed:  parseInt(result4[3])
+                }}});
+
             });
           }
 
           //Build a list of contributors
           for (i2 = 0; i2 < parseInt(result3[2]); i2++) {
-            contractInstance.getWebsite(i, i2, function (error, result4) {
+            contractInstance.getContributer(parseInt(result2[5]), i2, function (error, result4) {
               if (error) {
                 console.log("Error: " + error);
                 return;
               }
-              Fundraisers.findOne({"no": i}).contributors.push({
-                no: i2,
-                name: result4[0],
-                amount: parseInt(result4[1]),
-                message:  result4[2]
-              });
+
+              Fundraisers.update({ "no": parseInt(result4[4]) },
+                { $push: { contributors: {
+                  no: parseInt(result4[4]),
+                  name: result4[0],
+                  amount: parseInt(result4[1]),
+                  message:  result4[2]
+                }}});
             });
           }
         });

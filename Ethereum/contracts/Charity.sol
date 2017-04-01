@@ -144,38 +144,44 @@ contract Charity is usingOraclize {
 ------------------------------------------------------------------------------*/
 
     function getFundraiserInfo1(uint id) constant returns
-    (uint8, uint, bool, uint, uint) {
+    (uint8, uint, bool, uint, uint, uint) {
         return (
         funds[id].numberOfUrls,
         funds[id].maxOwnerMatching,
         funds[id].continueRaisingOverMax,
         funds[id].matchingPer100Wei,
-        funds[id].currentDonated);
+        funds[id].currentDonated,
+        id);
     }
 
     function getFundraiserInfo2(uint id) constant returns
-    (uint, string, uint, address, bool) {
+    (uint, string, uint, address, bool, uint) {
         return (
         funds[id].currentMatched,
         funds[id].name,
         funds[id].contributors.length,
         funds[id].starter,
-        funds[id].isRunning);
+        funds[id].isRunning,
+        id);
     }
 
     function getWebsite(uint fund, uint8 web) constant returns
-    (string, uint8, uint, uint) {
+    (string, uint8, uint, uint, uint, uint) {
         return (funds[fund].urls[web].url,
         funds[fund].urls[web].percentage,
         funds[fund].urls[web].amountToClaim,
-        funds[fund].urls[web].amountClaimed);
+        funds[fund].urls[web].amountClaimed,
+        fund,
+        web);
     }
 
     function getContributer(uint fund, uint cid) constant returns
-    (string, uint, string) {
+    (string, uint, string, uint, uint) {
         return (funds[fund].contributors[cid].name,
         funds[fund].contributors[cid].amount,
-        funds[fund].contributors[cid].message);
+        funds[fund].contributors[cid].message,
+        fund,
+        cid);
     }
 
 /*------------------------------------------------------------------------------
