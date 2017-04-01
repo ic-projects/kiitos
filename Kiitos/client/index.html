@@ -1,16 +1,27 @@
 <head>
   <title>Kiitos</title>
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Signika" rel="stylesheet">
 </head>
 <body>
   {{> index}}
+  <div class="overlay">
+    <div class="spinner">
+      <div class="cssload-thecube">
+        <div class="cssload-cube cssload-c1"></div>
+        <div class="cssload-cube cssload-c2"></div>
+        <div class="cssload-cube cssload-c4"></div>
+        <div class="cssload-cube cssload-c3"></div>
+      </div>
+    </div>
+  </div>
 </body>
 
 <template name="index">
   <nav>
     <ul>
       <li data-template="home" class="active">Home</li>
-      <li data-template="create">Create a New Kiito</li>
-      <li data-template="contribute">Contribute to a Kiito</li>
+      <li data-template="create">Create a New Kiitos Fundraiser</li>
+      <li data-template="contribute" class="last">Contribute to a Kiito</li>
     </ul>
   </nav>
   {{> Template.dynamic template=page}}

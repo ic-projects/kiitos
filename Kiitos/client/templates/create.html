@@ -1,3 +1,35 @@
 <template name="create">
-  <h1>Create a New Kiito</h1>
+  <h1>Create a New Kiitos Fundraiser</h1>
+  <form method="POST">
+    <div class="input-group">
+      <span class="legend">Contract Name</span>
+      <input type="text" name="contract-name" placeholder="Enter a contract name">
+    </div>
+
+    <!-- Websites -->
+    <div class="input-group-dual">
+      <input type="text" name="website-address" placeholder="Enter a website address">
+      <input type="number" name="percentage" max="100" min="1">
+      <input type="button" value="Add">
+    </div>
+
+    <div class="input-group">
+      <span class="legend">Fundraiser Goal</span>
+      <input type="number" name="percentage" max="100" min="1">
+    </div>
+    <div class="input-group">
+      <span class="legend">Maximum Match</span>
+      <input type="number" name="max-match" max="100" min="1">
+    </div>
+    <div class="input-group">
+      <span class="legend">Match Per 100 Wei</span>
+      <input type="number" name="match-per-hundred-wei" max="100" min="1">
+    </div>
+    <div class="input-group">
+      <span class="legend">Accept Donations After Funds Empty</span>
+      <input type="checkbox" name="continueAfterEmpty">
+    </div>
+
+    <input type="submit" value="Submit">
+  </form>
 </template>
