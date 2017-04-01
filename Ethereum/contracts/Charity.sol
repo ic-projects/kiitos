@@ -12,12 +12,11 @@ contract Charity {
         uint8 numberOfUrls;
         uint maxOwnerMatching;
         bool continueRaisingOverMax;
-        uint matchingPerEther; //in wei
+        uint matchingPer100Wei; //in wei
         uint currentDonated;
         uint currentMatched;
         string name;
-        mapping(uint => Contributor) contributor;
-        uint numberOfContributors;
+        Contributor[] contributors;
         address starter;
         bool isRunning;
     }
@@ -46,7 +45,7 @@ contract Charity {
 	    funds[id].numberOfUrls,
 	    funds[id].maxOwnerMatching,
 	    funds[id].continueRaisingOverMax,
-	    funds[id].matchingPerEther,
+	    funds[id].matchingPer100Wei,
 	    funds[id].currentDonated);
 	}
 
@@ -55,7 +54,7 @@ contract Charity {
 	    return (
 	    funds[id].currentMatched,
 	    funds[id].name,
-	    funds[id].numberOfContributors,
+	    funds[id].contributors.length,
 	    funds[id].starter,
 	    funds[id].isRunning);
 	}
@@ -71,7 +70,7 @@ contract Charity {
 
 	function createFund(
 	    string name,
-	    uint matchingPerEther,
+	    uint matchingPer100Wei,
 	    bool continueRaisingOverMax) payable
 	{
 	    if(bytes(name).length < 5) {
@@ -81,7 +80,7 @@ contract Charity {
 	    funds[numberOfFunds].starter = msg.sender;
 	    funds[numberOfFunds].name = name;
 	    funds[numberOfFunds].maxOwnerMatching = msg.value;
-	    funds[numberOfFunds].matchingPerEther = matchingPerEther;
+	    funds[numberOfFunds].matchingPer100Wei = matchingPer100Wei;
 	    funds[numberOfFunds].continueRaisingOverMax = continueRaisingOverMax;
 
 	    numberOfFunds++;
@@ -123,6 +122,45 @@ contract Charity {
 	    funds[id].isRunning = true;
 	}
 
+	function contribute(uint id, string name, string message) payable {
+	    if(msg.value == 0) {
+	        throw;
+	    }
+	    if(funds[id].isRunning) {
+	        throw;
+	    }
+	    if(!funds[id].continueRaisingOverMax &&
+	    funds[id].currentMatched >= funds[id].maxOwnerMatching) {
+	        throw;
+	    }
 
-    event FundraiserStarted();
+	    uint toMatch = (msg.value * funds[id].matchingPer100Wei) / 100;
+	    if(funds[id].currentMatched + toMatch > funds[id].maxOwnerMatching) {
+	        toMatch = funds[id].maxOwnerMatching - funds[id].currentMatched;
+    	    funds[id].currentMatched += toMatch;
+    	    funds[id].currentDonated += msg.value;
+    	    updateWebsites(id, toMatch+msg.value);
+	    } else {
+	        funds[id].currentMatched += toMatch;
+	        funds[id].currentDonated += msg.value;
+	        updateWebsites(id, toMatch+msg.value);
+	    }
+
+	    Donation(msg.value, funds[id].name);
+	    funds[id].contributors.push(Contributor(name, msg.value, message));
+	}
+
+	function updateWebsites(uint id, uint amount) private {
+	    uint toTake;
+	    uint totalTaken = 0;
+	    for(uint8 i = 0; i < funds[id].numberOfUrls; i++) {
+	        toTake = (amount * funds[id].urls[i].percentage) / 100;
+	        totalTaken += toTake;
+	        funds[id].urls[i].amountToClaim += toTake;
+	    }
+	    funds[id].urls[0].amountToClaim += amount - totalTaken;
+	}
+
+
+    event Donation(uint amount, string fundName);
 }
