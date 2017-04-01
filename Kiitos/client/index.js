@@ -497,29 +497,76 @@ Meteor.startup(() => {
 });
 
 function updateFundraisers() {
-  contractInstance.revealedBetsIndex(function (error, result) {
+  contractInstance.numberOfFunds(function (error, result) {
     if (error) {
       console.log("Error: " + error);
       return;
     }
-
-    // Resets the RevealedBets collection
-    RevealedBets.remove({});
-
-    // Build up the list of RevealedBets objects
+    console.log(result);
     for (i = 0; i < parseInt(result); i++) {
-      contractInstance.getRevBetIndex(i, function(error, result2) {
+      //Get each Fundraiser
+      contractInstance.getFundraiserInfo1(i, function(error, result2) {
         if (error) {
           console.log("Error: " + error);
           return;
         }
+        contractInstance.getFundraiserInfo2(i, function(error, result3) {
+          if (error) {
+            console.log("Error: " + error);
+            return;
+          }
 
-        RevealedBets.insert({
-          address: result2[0],
-          start: web3.fromWei(parseInt(result2[1]), 'ether'),
-          end: web3.fromWei(parseInt(result2[2]), 'ether')
+          Fundraisers.insert({
+            no: i,
+            numberOfUrls: parseInt(result2[0]),
+            maxOwnerMatching: web3.fromWei(parseInt(result2[1]), 'ether'),
+            continueRaisingOverMax: Boolean(result2[2]),
+            matchingPer100Wei: parseInt(result2[3]),
+            currentDonated: web3.fromWei(parseInt(result2[4]), 'ether'),
+            currentMatched: web3.fromWei(parseInt(result3[0]), 'ether'),
+            name: result3[1],
+            numberOfContributors: parseInt(result3[2]),
+            starter: result3[3],
+            isRunning: Boolean(result3[4]),
+            websites: [],
+            contributors: []
+          });
+
+          //Build a list of websites
+          for (i2 = 0; i2 < parseInt(result2[0]); i2++) {
+            contractInstance.getWebsite(i, i2, function (error, result4) {
+              if (error) {
+                console.log("Error: " + error);
+                return;
+              }
+              console.log(result4);
+              
+              Fundraisers.findOne({"no": i}).websites.push({
+                no: i2,
+                url: result4[0],
+                percentage: parseInt(result4[1]),
+                amountToClaim:  parseInt(result4[2]),
+                amountClaimed:  parseInt(result4[3])
+              });
+            });
+          }
+
+          //Build a list of contributors
+          for (i2 = 0; i2 < parseInt(result3[2]); i2++) {
+            contractInstance.getWebsite(i, i2, function (error, result4) {
+              if (error) {
+                console.log("Error: " + error);
+                return;
+              }
+              Fundraisers.findOne({"no": i}).contributors.push({
+                no: i2,
+                name: result4[0],
+                amount: parseInt(result4[1]),
+                message:  result4[2]
+              });
+            });
+          }
         });
-
       });
     }
   });
