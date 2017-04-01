@@ -66,8 +66,8 @@ contract Charity is usingOraclize {
         funds[numberOfFunds].matchingPer100Wei = matchingPer100Wei;
         funds[numberOfFunds].continueRaisingOverMax = continueRaisingOverMax;
 
+        FundCreated(msg.sender, name, numberOfFunds);
         numberOfFunds++;
-        FundCreated(msg.sender, name);
     }
 
     function addWebsiteToFund(uint id, string url, uint8 percentage) {
@@ -313,7 +313,7 @@ contract Charity is usingOraclize {
 
 
     event Donation(uint amount, string fundName);
-    event FundCreated(address starter, string name);
+    event FundCreated(address starter, string name, uint id);
     event WebsiteAdded(address starter, string name, string url);
     event FundStarted(address starter, string name);
     event TopUpFund(address starter, string name, uint amount);

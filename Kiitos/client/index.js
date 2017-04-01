@@ -513,14 +513,54 @@ abi =  [
 contractAddress = '0x7a1e1ded2fabcfe87af12ee7b8d7303b0e63c303';
 Contract = web3.eth.contract(abi);
 contractInstance = Contract.at(contractAddress);
-
+editingID = 0;
 Fundraisers = new Mongo.Collection(null);
 
 Meteor.startup(() => {
   updateFundraisers();
+  var events = contractInstance.allEvents({fromBlock:'latest'}, function(error, result){
+    //$.notify(result.event+"");
+    switch(result.event.toLowerCase()) {
+      case "fundcreated": {
+        //updateWinnerTable();
+        if (result.args.starter == web3.eth.defaultAccount) {
+          //editingID = result.args.id;
+        }
+        break;
+      }
+      case "websiteadded": {
+        //updateWinnerTable();
+        if (result.args.starter == web3.eth.defaultAccount) {
+
+        }
+        break;
+      }
+      case "fundstarted": {
+        //updateWinnerTable();
+        if (result.args.starter == web3.eth.defaultAccount) {
+
+        }
+        break;
+      }
+      case "topupfund": {
+        //updateWinnerTable();
+        if (result.args.starter == web3.eth.defaultAccount) {
+
+        }
+        break;
+      }
+      case "refundfund": {
+        //updateWinnerTable();
+        if (result.args.starter == web3.eth.defaultAccount) {
+
+        }
+        break;
+      }
+    }});
 });
 
 function updateFundraisers() {
+  Fundraisers = new Mongo.Collection(null);
   contractInstance.numberOfFunds(function (error, result) {
     if (error) {
       console.log("Error: " + error);
