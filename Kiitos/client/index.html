@@ -1,0 +1,17 @@
+<head>
+  <title>Kiitos</title>
+</head>
+<body>
+  {{> index}}
+</body>
+
+<template name="index">
+  <nav>
+    <ul>
+      <li data-template="home" class="active">Home</li>
+      <li data-template="create">Create a New Kiito</li>
+      <li data-template="contribute">Contribute to a Kiito</li>
+    </ul>
+  </nav>
+  {{> Template.dynamic template=page}}
+</template>
