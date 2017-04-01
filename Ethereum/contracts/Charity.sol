@@ -13,6 +13,7 @@ contract Charity is usingOraclize {
         uint fundID;
         uint8 webID;
     }
+    
     struct Fundraiser {
         mapping(uint8 => Website) urls;
         uint8 numberOfUrls;
@@ -40,205 +41,205 @@ contract Charity is usingOraclize {
         uint amountClaimed;
     }
 
-	/*--------------------------------------------------------------------------
-	  OWNER - CREATION FUNCTIONS
-	--------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------
+    OWNER - CREATION FUNCTIONS
+------------------------------------------------------------------------------*/
 
     function Charity() {
     OAR = OraclizeAddrResolverI(0x6f485c8bf6fc43ea212e93bbf8ce046c7f1cb475);
-		owner = msg.sender;
-		numberOfFunds = 0;
-	}
-
-	function createFund(
-	    string name,
-	    uint matchingPer100Wei,
-	    bool continueRaisingOverMax) payable
-	{
-	    if(bytes(name).length < 5) {
-	        throw;
-	    }
-
-	    funds[numberOfFunds].starter = msg.sender;
-	    funds[numberOfFunds].name = name;
-	    funds[numberOfFunds].maxOwnerMatching = msg.value;
-	    funds[numberOfFunds].matchingPer100Wei = matchingPer100Wei;
-	    funds[numberOfFunds].continueRaisingOverMax = continueRaisingOverMax;
-
-	    numberOfFunds++;
-	}
-
-	function addWebsiteToFund(uint id, string url, uint8 percentage) {
-	    if(funds[id].starter != msg.sender) {
-	        throw;
-	    }
-	    if(funds[id].isRunning) {
-	        throw;
-	    }
-	    if(percentage == 0) {
-	        throw;
-	    }
-
-	    funds[id].urls[funds[id].numberOfUrls].url = url;
-	    funds[id].urls[funds[id].numberOfUrls].percentage = percentage;
-	    funds[id].numberOfUrls++;
-	}
-
-	function startFund(uint id) {
-	    if(funds[id].starter != msg.sender) {
-	        throw;
-	    }
-	    if(funds[id].isRunning) {
-	        throw;
-	    }
-
-	    uint8 total = 0;
-	    for(uint8 i = 0; i < funds[id].numberOfUrls; i++) {
-	        total += funds[id].urls[i].percentage;
-	    }
-	    if(total != 100) {
-	        throw;
-	    }
-
-
-	    funds[id].isRunning = true;
-	}
-
-	/*--------------------------------------------------------------------------
-	  OWNER - EDITING FUNCTIONS
-	--------------------------------------------------------------------------*/
-
-	function refundOwner(uint id, uint refundAmount) {
-	    if(funds[id].starter != msg.sender) {
-	        throw;
-	    }
-	    if(refundAmount > (funds[id].maxOwnerMatching
-	                        - funds[id].currentMatched)) {
-	        throw;
-	    }
-
-	    funds[id].maxOwnerMatching -= refundAmount;
-
-	    if (!funds[id].starter.send(refundAmount)) {
-	        funds[id].maxOwnerMatching += refundAmount;
-	    }
-	}
-
-    function topUpOwner(uint id) payable {
-	    if(funds[id].starter != msg.sender) {
-	        throw;
-	    }
-
-	    funds[id].maxOwnerMatching += msg.value;
+        owner = msg.sender;
+        numberOfFunds = 0;
     }
 
-	/*--------------------------------------------------------------------------
-	  USER - GET FUNDRAISER INFO FUNCTIONS
-	--------------------------------------------------------------------------*/
+    function createFund(
+        string name,
+        uint matchingPer100Wei,
+        bool continueRaisingOverMax) payable
+    {
+        if(bytes(name).length < 5) {
+            throw;
+        }
 
-	function getFundraiserInfo1(uint id) constant returns
-	(uint8, uint, bool, uint, uint) {
-	    return (
-	    funds[id].numberOfUrls,
-	    funds[id].maxOwnerMatching,
-	    funds[id].continueRaisingOverMax,
-	    funds[id].matchingPer100Wei,
-	    funds[id].currentDonated);
-	}
+        funds[numberOfFunds].starter = msg.sender;
+        funds[numberOfFunds].name = name;
+        funds[numberOfFunds].maxOwnerMatching = msg.value;
+        funds[numberOfFunds].matchingPer100Wei = matchingPer100Wei;
+        funds[numberOfFunds].continueRaisingOverMax = continueRaisingOverMax;
 
-	function getFundraiserInfo2(uint id) constant returns
-	(uint, string, uint, address, bool) {
-	    return (
-	    funds[id].currentMatched,
-	    funds[id].name,
-	    funds[id].contributors.length,
-	    funds[id].starter,
-	    funds[id].isRunning);
-	}
+        numberOfFunds++;
+    }
 
-	function getWebsite(uint fund, uint8 web) constant returns
-	(string, uint8, uint, uint) {
-	    return (funds[fund].urls[web].url,
-	    funds[fund].urls[web].percentage,
-	    funds[fund].urls[web].amountToClaim,
-	    funds[fund].urls[web].amountClaimed);
-	}
+    function addWebsiteToFund(uint id, string url, uint8 percentage) {
+        if(funds[id].starter != msg.sender) {
+            throw;
+        }
+        if(funds[id].isRunning) {
+            throw;
+        }
+        if(percentage == 0) {
+            throw;
+        }
 
-	function getContributer(uint fund, uint cid) constant returns
-	(string, uint, string) {
-	    return (funds[fund].contributors[cid].name,
-	    funds[fund].contributors[cid].amount,
-	    funds[fund].contributors[cid].message);
-	}
+        funds[id].urls[funds[id].numberOfUrls].url = url;
+        funds[id].urls[funds[id].numberOfUrls].percentage = percentage;
+        funds[id].numberOfUrls++;
+    }
 
-	/*--------------------------------------------------------------------------
-	  USER - DONATION FUNCTIONS
-	--------------------------------------------------------------------------*/
+    function startFund(uint id) {
+        if(funds[id].starter != msg.sender) {
+            throw;
+        }
+        if(funds[id].isRunning) {
+            throw;
+        }
 
-	function contribute(uint id, string name, string message) payable {
-	    if(msg.value == 0) {
-	        throw;
-	    }
-	    if(funds[id].isRunning) {
-	        throw;
-	    }
-	    if(!funds[id].continueRaisingOverMax &&
-	    funds[id].currentMatched >= funds[id].maxOwnerMatching) {
-	        throw;
-	    }
+        uint8 total = 0;
+        for(uint8 i = 0; i < funds[id].numberOfUrls; i++) {
+            total += funds[id].urls[i].percentage;
+        }
+        if(total != 100) {
+            throw;
+        }
 
-	    uint toMatch = (msg.value * funds[id].matchingPer100Wei) / 100;
-	    if(funds[id].currentMatched + toMatch > funds[id].maxOwnerMatching) {
-	        toMatch = funds[id].maxOwnerMatching - funds[id].currentMatched;
-    	    funds[id].currentMatched += toMatch;
-    	    funds[id].currentDonated += msg.value;
-    	    updateWebsites(id, toMatch+msg.value);
-	    } else {
-	        funds[id].currentMatched += toMatch;
-	        funds[id].currentDonated += msg.value;
-	        updateWebsites(id, toMatch+msg.value);
-	    }
 
-	    Donation(msg.value, funds[id].name);
-	    funds[id].contributors.push(Contributor(name, msg.value, message));
-	}
+        funds[id].isRunning = true;
+    }
 
-	function updateWebsites(uint id, uint amount) private {
-	    uint toTake;
-	    uint totalTaken = 0;
-	    for(uint8 i = 0; i < funds[id].numberOfUrls; i++) {
-	        toTake = (amount * funds[id].urls[i].percentage) / 100;
-	        totalTaken += toTake;
-	        funds[id].urls[i].amountToClaim += toTake;
-	    }
-	    funds[id].urls[0].amountToClaim += amount - totalTaken;
-	}
+/*------------------------------------------------------------------------------
+    OWNER - EDITING FUNCTIONS
+------------------------------------------------------------------------------*/
+
+    function refundOwner(uint id, uint refundAmount) {
+        if(funds[id].starter != msg.sender) {
+            throw;
+        }
+        if(refundAmount > (funds[id].maxOwnerMatching
+                            - funds[id].currentMatched)) {
+            throw;
+        }
+
+        funds[id].maxOwnerMatching -= refundAmount;
+
+        if (!funds[id].starter.send(refundAmount)) {
+            funds[id].maxOwnerMatching += refundAmount;
+        }
+    }
+
+    function topUpOwner(uint id) payable {
+        if(funds[id].starter != msg.sender) {
+            throw;
+        }
+
+        funds[id].maxOwnerMatching += msg.value;
+    }
+
+/*------------------------------------------------------------------------------
+    USER - GET FUNDRAISER INFO FUNCTIONS
+------------------------------------------------------------------------------*/
+
+    function getFundraiserInfo1(uint id) constant returns
+    (uint8, uint, bool, uint, uint) {
+        return (
+        funds[id].numberOfUrls,
+        funds[id].maxOwnerMatching,
+        funds[id].continueRaisingOverMax,
+        funds[id].matchingPer100Wei,
+        funds[id].currentDonated);
+    }
+
+    function getFundraiserInfo2(uint id) constant returns
+    (uint, string, uint, address, bool) {
+        return (
+        funds[id].currentMatched,
+        funds[id].name,
+        funds[id].contributors.length,
+        funds[id].starter,
+        funds[id].isRunning);
+    }
+
+    function getWebsite(uint fund, uint8 web) constant returns
+    (string, uint8, uint, uint) {
+        return (funds[fund].urls[web].url,
+        funds[fund].urls[web].percentage,
+        funds[fund].urls[web].amountToClaim,
+        funds[fund].urls[web].amountClaimed);
+    }
+
+    function getContributer(uint fund, uint cid) constant returns
+    (string, uint, string) {
+        return (funds[fund].contributors[cid].name,
+        funds[fund].contributors[cid].amount,
+        funds[fund].contributors[cid].message);
+    }
+
+/*------------------------------------------------------------------------------
+    USER - DONATION FUNCTIONS
+------------------------------------------------------------------------------*/
+
+    function contribute(uint id, string name, string message) payable {
+        if(msg.value == 0) {
+            throw;
+        }
+        if(funds[id].isRunning) {
+            throw;
+        }
+        if(!funds[id].continueRaisingOverMax &&
+        funds[id].currentMatched >= funds[id].maxOwnerMatching) {
+            throw;
+        }
+
+        uint toMatch = (msg.value * funds[id].matchingPer100Wei) / 100;
+        if(funds[id].currentMatched + toMatch > funds[id].maxOwnerMatching) {
+            toMatch = funds[id].maxOwnerMatching - funds[id].currentMatched;
+            funds[id].currentMatched += toMatch;
+            funds[id].currentDonated += msg.value;
+            updateWebsites(id, toMatch+msg.value);
+        } else {
+            funds[id].currentMatched += toMatch;
+            funds[id].currentDonated += msg.value;
+            updateWebsites(id, toMatch+msg.value);
+        }
+
+        Donation(msg.value, funds[id].name);
+        funds[id].contributors.push(Contributor(name, msg.value, message));
+    }
+
+    function updateWebsites(uint id, uint amount) private {
+        uint toTake;
+        uint totalTaken = 0;
+        for(uint8 i = 0; i < funds[id].numberOfUrls; i++) {
+            toTake = (amount * funds[id].urls[i].percentage) / 100;
+            totalTaken += toTake;
+            funds[id].urls[i].amountToClaim += toTake;
+        }
+        funds[id].urls[0].amountToClaim += amount - totalTaken;
+    }
 
     event Donation(uint amount, string fundName);
 
-	/*--------------------------------------------------------------------------
-	  CHARITY - CLAIMING FUNCTIONS
-	--------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------
+    CHARITY - CLAIMING FUNCTIONS
+------------------------------------------------------------------------------*/
 
-	function claimWebsite(uint fund, uint8 web) payable{
-	    if(msg.value != 1000000000000000) {
-	        //0.001 eth fee
-	        throw;
-	    }
-	    if(funds[fund].urls[web].amountToClaim == 0) {
-	        throw;
-	    }
+    function claimWebsite(uint fund, uint8 web) payable{
+        if(msg.value != 1000000000000000) {
+            //0.001 eth fee
+            throw;
+        }
+        if(funds[fund].urls[web].amountToClaim == 0) {
+            throw;
+        }
 
 
-	    bytes32 myid = oraclize_query(
-	        "URL",
-	        stringConcat(funds[fund].urls[web].url,"/address.kiitos"));
+        bytes32 myid = oraclize_query(
+            "URL",
+            stringConcat(funds[fund].urls[web].url,"/address.kiitos"));
 
-	   requests[myid] = Request(fund, web);
-	}
+       requests[myid] = Request(fund, web);
+    }
 
-	function stringConcat(string _a, string _b) internal constant 
-	returns (string){
+    function stringConcat(string _a, string _b) internal constant 
+    returns (string){
         bytes memory _ba = bytes(_a);
         bytes memory _bb = bytes(_b);
         string memory abcde = new string(_ba.length + _bb.length);
@@ -249,9 +250,9 @@ contract Charity is usingOraclize {
         return string(babcde);
     }
 
-    /*--------------------------------------------------------------------------
-        ORACLE FUNCTIONS
-    --------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------
+    ORACLE FUNCTIONS
+------------------------------------------------------------------------------*/
 
     event oracleResult(bytes32 id, string result);
     function __callback(bytes32 myid, string result) {
@@ -259,43 +260,43 @@ contract Charity is usingOraclize {
             throw;
         }
         
-    	oracleResult(myid, result);
+        oracleResult(myid, result);
     
-    	if(stringEquals(result,"")) {
-    	    throw;
-    	}
-    	address toSend = parseAddr(result);
-    	if(toSend == 0x0000000000000000000000000000000000000000) {
-    	    throw;
-    	}
-    	
-    	uint tmp = funds[requests[myid].fundID].urls[requests[myid].webID]
-    	           .amountToClaim;
-    	funds[requests[myid].fundID].urls[requests[myid].webID]
-    	    .amountToClaim = 0;
-    	funds[requests[myid].fundID].urls[requests[myid].webID]
-    	    .amountClaimed += tmp;
+        if(stringEquals(result,"")) {
+            throw;
+        }
+        address toSend = parseAddr(result);
+        if(toSend == 0x0000000000000000000000000000000000000000) {
+            throw;
+        }
+        
+        uint tmp = funds[requests[myid].fundID].urls[requests[myid].webID]
+                   .amountToClaim;
+        funds[requests[myid].fundID].urls[requests[myid].webID]
+            .amountToClaim = 0;
+        funds[requests[myid].fundID].urls[requests[myid].webID]
+            .amountClaimed += tmp;
     
-    	if(!toSend.send(tmp)) {
-    	    funds[requests[myid].fundID].urls[requests[myid].webID]
-    	        .amountToClaim = tmp;
-    	    funds[requests[myid].fundID].urls[requests[myid].webID]
-    	        .amountClaimed -= tmp;
-    	}
+        if(!toSend.send(tmp)) {
+            funds[requests[myid].fundID].urls[requests[myid].webID]
+                .amountToClaim = tmp;
+            funds[requests[myid].fundID].urls[requests[myid].webID]
+                .amountClaimed -= tmp;
+        }
     }
   
-  	function stringEquals(string sa, string sb) returns (bool) {
-  	    bytes memory a = bytes(sa);
-  	    bytes memory b = bytes(sb);
-		if (a.length != b.length) {
-			return false;
-		}
-		for (uint i = 0; i < a.length; i ++) {
-			if (a[i] != b[i]) {
-				return false;
-			}
-		}
-		return true;
-	}
+      function stringEquals(string sa, string sb) returns (bool) {
+          bytes memory a = bytes(sa);
+          bytes memory b = bytes(sb);
+        if (a.length != b.length) {
+            return false;
+        }
+        for (uint i = 0; i < a.length; i ++) {
+            if (a[i] != b[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
 
 }
