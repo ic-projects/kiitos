@@ -1,6 +1,7 @@
 pragma solidity ^0.4.4;
+import "./usingOraclize.sol";
 
-contract Charity {
+contract Charity is usingOraclize {
 
     address public owner;
 
@@ -33,12 +34,13 @@ contract Charity {
         uint amountToClaim;
         uint amountClaimed;
     }
-	
+
 	/*--------------------------------------------------------------------------
 	  OWNER - CREATION FUNCTIONS
 	--------------------------------------------------------------------------*/
 
     function Charity() {
+    OAR = OraclizeAddrResolverI(0x6f485c8bf6fc43ea212e93bbf8ce046c7f1cb475);
 		owner = msg.sender;
 		numberOfFunds = 0;
 	}
@@ -124,22 +126,22 @@ contract Charity {
 
 	    funds[id].isRunning = true;
 	}
-	
+
 	/*--------------------------------------------------------------------------
 	  OWNER - EDITING FUNCTIONS
 	--------------------------------------------------------------------------*/
-	
+
 	function refundOwner(uint id, uint refundAmount) {
 	    if(funds[id].starter != msg.sender) {
 	        throw;
 	    }
-	    if(refundAmount > (funds[id].maxOwnerMatching 
+	    if(refundAmount > (funds[id].maxOwnerMatching
 	                        - funds[id].currentMatched)) {
 	        throw;
 	    }
-	    
+
 	    funds[id].maxOwnerMatching -= refundAmount;
-	        
+
 	    if (!funds[id].starter.send(refundAmount)) {
 	        funds[id].maxOwnerMatching += refundAmount;
 	    }
@@ -149,10 +151,10 @@ contract Charity {
 	    if(funds[id].starter != msg.sender) {
 	        throw;
 	    }
-	    
+
 	    funds[id].maxOwnerMatching += msg.value;
     }
-	
+
 	/*--------------------------------------------------------------------------
 	  USER - DONATION FUNCTIONS
 	--------------------------------------------------------------------------*/
@@ -197,12 +199,24 @@ contract Charity {
 	}
 
     event Donation(uint amount, string fundName);
-	
+
 	/*--------------------------------------------------------------------------
 	  CHARITY - CLAIMING FUNCTIONS
 	--------------------------------------------------------------------------*/
-	
+
 	function claimWebsite(uint id) {
 	}
-    
+
+
+
+
+  /*--------------------------------------------------------------------------
+    ORACLE FUNCTIONS
+  --------------------------------------------------------------------------*/
+
+  event oracleResult(bytes32 id, string result);
+  function __callback(bytes32 myid, string result) {
+
+  }
+
 }
