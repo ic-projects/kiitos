@@ -3,14 +3,14 @@
   <form method="POST">
     <div class="input-group">
       <span class="legend">Contract Name</span>
-      <input type="text" name="contract-name" id="name" placeholder="Enter a contract name">
+      <input type="text" id="name" placeholder="Enter a contract name">
     </div>
 
     <!-- Websites -->
     <div class="input-group-dual">
-      <input type="text" name="website-address" id="urlinput" placeholder="Enter a website address">
-      <input type="number" name="percentage" id="percentinput" max="100" min="1">
-      <input type="button" value="Add" class="submitAdd">
+      <input type="text" id="urlInput" placeholder="Enter a website address">
+      <input type="number" id="percentInput" max="100" min="1">
+      <input type="button" value="Add" id="submitAdd">
     </div>
 
     <div class="input-group">
@@ -19,22 +19,18 @@
       {{/each}}
     </div>
     <div class="input-group">
-      <span class="legend">Fundraiser Goal</span>
-      <input type="number" name="percentage" min="1">
-    </div>
-    <div class="input-group">
       <span class="legend">Maximum Match</span>
-      <input type="number" name="max-match" id="maxMatch" min="0">
+      <input type="number" id="maxMatch" min="0">
     </div>
     <div class="input-group">
       <span class="legend">Match Per 100 Wei</span>
-      <input type="number" name="match-per-hundred-wei" id="matchPerHundredWei" max="1000" min="0">
+      <input type="number" id="matchPerHundredWei" max="1000" min="0">
     </div>
     <div class="input-group">
       <span class="legend">Accept Donations After Funds Empty</span>
-      <input type="checkbox" name="continueAfterEmpty" id="continueAfterEmpty">
+      <input type="checkbox" id="continueAfterEmpty">
     </div>
 
-    <input type="button" value="Submit" class="submitFundraiser">
+    <input type="button" value="Submit" id="submitFundraiser">
   </form>
 </template>

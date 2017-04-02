@@ -536,7 +536,7 @@ function updateFundraisers() {
     console.log(result);
     for (i = 0; i < parseInt(result); i++) {
       //Get each Fundraiser
-      console.log(i)
+      console.log(i);
       contractInstance.getFundraiserInfo1(i, function(error, result2) {
         if (error) {
           console.log("Error: " + error);
@@ -621,7 +621,7 @@ Template.index.events({
   'click nav ul li': function(event, template) {
     $('nav ul li').removeClass('active');
 
-    let selectedLink = $(event.target).closest('li');
+    let selectedLink = $(event.target);
     selectedLink.addClass('active');
     template.currentPage.set(selectedLink.data('template'));
   }
