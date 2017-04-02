@@ -28,8 +28,10 @@ Template.contribute.events({
 
 function contribute(id, name, message, amount) {
   $('.overlay').show();
+  waiting = true;
   contractInstance.contribute.sendTransaction(id, name, message, {value: parseInt(amount)}, function(error, data) {
     if (error) {
+      waiting = false;
       console.log('Error in contribute: ' + error);
       return;
     }

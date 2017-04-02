@@ -212,7 +212,7 @@ contract Charity is usingOraclize {
             updateWebsites(id, toMatch+msg.value);
         }
 
-        Donation(msg.value, funds[id].name);
+        Donation(msg.sender, msg.value, funds[id].name);
         funds[id].contributors.push(Contributor(name, msg.value, message));
     }
 
@@ -312,7 +312,7 @@ contract Charity is usingOraclize {
     }
 
 
-    event Donation(uint amount, string fundName);
+    event Donation(address starter, uint amount, string fundName);
     event FundCreated(address starter, string name, uint id);
     event WebsiteAdded(address starter, string name, string url);
     event FundStarted(address starter, string name);

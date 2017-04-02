@@ -4,7 +4,7 @@ import './contribute.js';
 import './create.js';
 import './home.js';
 
-abi =  [
+abi = [
   {
     "constant": true,
     "inputs": [
@@ -397,6 +397,11 @@ abi =  [
     "inputs": [
       {
         "indexed": false,
+        "name": "starter",
+        "type": "address"
+      },
+      {
+        "indexed": false,
         "name": "amount",
         "type": "uint256"
       },
@@ -522,12 +527,27 @@ editingID = 0;
 Fundraisers = new Mongo.Collection(null);
 EditingWebsites = new Mongo.Collection(null);
 
+waiting = false;
+
 Meteor.startup(() => {
   updateFundraisers();
+
+  console.log("Making watchers");
+  var myEvent = contractInstance.Donation({fromBlock: 'latest'}, function(error, result){
+    if(error) {
+      console.log("Error: " + error);
+      return;
+    }
+    console.log('abd');
+    if(result.args.starter === web3.eth.defaultAccount && waiting) {
+      waiting = false;
+      updateFundraisers();
+    }
+  });
 });
 
 function updateFundraisers() {
-  Fundraisers = new Mongo.Collection(null);
+  Fundraisers.remove({});
   contractInstance.numberOfFunds(function (error, result) {
     if (error) {
       console.log("Error: " + error);
