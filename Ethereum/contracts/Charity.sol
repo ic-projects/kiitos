@@ -74,7 +74,7 @@ contract Charity is usingOraclize {
         if(funds[id].starter != msg.sender) {
             throw;
         }
-        if(funds[id].isRunning) {
+        if(!funds[id].isRunning) {
             throw;
         }
         if(percentage == 0) {
