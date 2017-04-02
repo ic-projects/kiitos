@@ -9,10 +9,12 @@
           <span class="website">{{weiToEth (add amountToClaim amountClaimed)}} ETH into {{url}}</span>
         {{/each}}
       </div>
-      <div class="maxOwnerMatching">{{maxOwnerMatching}}</div>
-      <div class="matchingPerHundredWei">{{matchingPer100Wei}} Per 100 Wei</div>
-      <div class="currentDonated"><span>{{currentDonated}}</span> Currently Donated</div>
-      <div class="currentMatched"><span>{{currentMatched}}</span> Currently Matched</div>
+      <div class="maxOwnerMatching">Match up to {{maxOwnerMatching}} ETH</div>
+      <div class="bottom">
+        <div class="matchingPerHundredWei"><span>{{matchingPer100Wei}}</span> Per 100 Wei</div>
+        <div class="currentDonated"><span>{{round currentDonated}}</span> Currently Donated</div>
+        <div class="currentMatched"><span>{{round currentMatched}}</span> Currently Matched</div>
+      </div>
     </div>
   {{/each}}
 
@@ -22,24 +24,23 @@
         <div class="modal-body">
           <form class="form-horizontal">
             <div class="form-group">
-              <label for="contributionName" class="col-sm-4 control-label">Your Name</label>
-              <div class="col-sm-8">
+              <label for="contributionName" class="col-sm-2 control-label">Name</label>
+              <div class="col-sm-10">
                 <input type="text" class="form-control" id="contributionName" placeholder="Enter your name" required>
               </div>
             </div>
             <div class="form-group">
-              <label for="contributionName" class="col-sm-4 control-label">Message</label>
-              <div class="col-sm-8">
+              <label for="contributionName" class="col-sm-2 control-label">Message</label>
+              <div class="col-sm-10">
                 <input type="text" class="form-control" id="contributionMessage" placeholder="Enter your message" required>
               </div>
             </div>
             <div class="form-group">
-              <label for="contributionAmount" class="col-sm-4 control-label">Amount in 100 Wei</label>
-              <div class="col-sm-8">
+              <label for="contributionAmount" class="col-sm-2 control-label">Amount</label>
+              <div class="col-sm-10">
                 <div class="input-group">
-                  <div class="input-group-addon">100 x</div>
-                  <input type="number" class="form-control" id="contributionAmount" placeholder="Amount" min="1" required>
-                  <div class="input-group-addon">Wei</div>
+                  <input type="number" class="form-control" id="contributionAmount" placeholder="Amount" min="0.01" required>
+                  <div class="input-group-addon">ETH</div>
                 </div>
               </div>
             </div>
