@@ -1,7 +1,6 @@
 Template.contribute.helpers({
   fundraisers: function() {
-    console.log(Fundraisers.find().fetch());
-    return Fundraisers.find();
+    return Fundraisers.find().fetch();
   },
   add: function(m, n) {
     return m + n;
@@ -11,13 +10,29 @@ Template.contribute.helpers({
   }
 });
 
-Template.contribute.events({
-  'click .claim': function(event, template) {
-    var target = $(event.target);
+var selectedCard;
 
+Template.contribute.events({
+  'click .card': function(event, template) {
+    selectedCard = $(event.target).closest('.card');
+    $('#contributeModal').modal('show');
+  },
+  'click #submitContribution': function() {
+    id = selectedCard.attr('fundraiser-id');
+    name = $('#contributionName').val();
+    message = $('#contributionMessage').val();
+    amount = $('#contributionAmount').val();
+    contribute(id, name, message, amount);
   }
 });
 
-function claimWebsite(idFund, idWeb) {
-
+function contribute(id, name, message, amount) {
+  $('.overlay').show();
+  contractInstance.contribute.sendTransaction(id, name, message, {value: parseInt(amount)}, function(error, data) {
+    if (error) {
+      console.log('Error in contribute: ' + error);
+      return;
+    }
+    $('.overlay').hide();
+  });
 }

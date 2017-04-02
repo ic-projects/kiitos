@@ -25,11 +25,6 @@ nav ul li.last {
   margin: 0;
 }
 
-.input-group {
-  display: block;
-  width: 400px;
-}
-
 .overlay {
   position: fixed;
   width: 100%;
@@ -51,36 +46,3 @@ nav ul li.last {
   margin: -73px 0 0 -36px;
   position: fixed;
 }
-
-table {
-  border-collapse: collapse;
-  border-spacing: 0;
-  margin: 20px auto;
-}
-
-table thead,
-table tbody {
-  border-bottom: 2px solid rgba(86, 86, 86, 0.25);
-}
-
-table td {
-  padding: 0.75em 0.75em;
-}
-
-table th {
-  font-size: 0.9em;
-  font-weight: 500;
-  padding: 0 0.75em 0.75em 0.75em;
-  text-align: left;
-}
-
-table tbody tr {
-  border: 1px solid rgba(86, 86, 86, 0.25);
-  border-left: 0;
-  border-right: 0;
-}
-
-table tbody tr:nth-child(2n+1) {
-  background-color: rgba(86, 86, 86, 0.075);
-}
-
