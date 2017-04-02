@@ -67,7 +67,7 @@ Template.create.events({
     let name = template.find("#name").value;
     let matchPerHundredWei = parseInt(template.find("#matchPerHundredWei").value);
     let continueAfterEmpty = Boolean(template.find("#continueAfterEmpty").value);
-    let maxMatch = parseInt(template.find("#maxMatch").value);
+    let maxMatch = web3.toWei(parseInt(template.find("#maxMatch").value),'ether');
 
     contractInstance.numberOfFunds(function(error, result) {
       if (error) {
