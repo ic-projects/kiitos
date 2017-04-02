@@ -10,7 +10,6 @@
         <td>Number of Contributors</td>
         <td>Total Donated in ETH</td>
         <td>Total Matched in ETH</td>
-        <td>Claim</td>
       </tr>
     </thead>
     <tbody>
@@ -27,9 +26,6 @@
         <td>{{numberOfContributors}}</td>
         <td>{{currentDonated}}</td>
         <td>{{currentMatched}}</td>
-        <td>
-          <button fundraiser-number="{{no}}" claim-amount="{{currentDonated}}" class="claim">Claim</button>
-        </td>
       </tr>
     {{/each}}
     </tbody>
