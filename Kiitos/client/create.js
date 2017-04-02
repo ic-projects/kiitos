@@ -1,3 +1,5 @@
+
+
 function addWebsite(funds) {
   if(EditingWebsites.find().fetch().length === 0) {
     contractInstance.startFund(funds, function(error, data) {
