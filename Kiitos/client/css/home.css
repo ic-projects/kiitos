@@ -14,7 +14,7 @@
     width: 100%;
     margin: 0;
     overflow: hidden;
-    background-image: url("../charity.jpg");
+    font-size: 1000000px;
 }
 
 .page-break {
@@ -22,11 +22,19 @@
     margin: 20px 0 0;
 }
 
-
 .page-title {
     position: relative;
     display: inline-block;
     margin-top: 140px;
     margin-bottom: 40px;
+
+}
+
+.fullwidth-cover-image {
+    background-size: cover;
+    background-attachment: fixed;
+    background-position: 50% 10%;
+    background-repeat: no-repeat;
+    background-image: url(../charity.jpg);
 }
 

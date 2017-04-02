@@ -8,9 +8,11 @@ h1, h2, h3 {
 
 nav ul {
   list-style: none;
-  padding: 0;
+  padding: 1em;
   margin: 0;
   background-color: black;
+  overflow: hidden;
+  border: 1px solid #e7e7e7;
 
 }
 nav ul li {
@@ -19,15 +21,15 @@ nav ul li {
   margin-right: 30px;
   align-content: center;
   color: white;
+  font-size: 15px;
+  padding: 14px 16px;
 }
 
-nav ul li.active {
-  background-color: dimgrey;
-}
 
 nav ul li.last {
   margin: 0;
 }
+
 
 .overlay {
   position: fixed;
