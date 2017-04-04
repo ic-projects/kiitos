@@ -544,6 +544,12 @@ Meteor.startup(() => {
       updateFundraisers();
     }
   });
+  var myEvent2 = contractInstance.FundStarted({fromBlock: 'latest'}, function(error, result){
+    if(result.args.starter === web3.eth.defaultAccount && editing) {
+      editing = false;
+      updateFundraisers();
+    }
+  });
 });
 
 function updateFundraisers() {
@@ -628,7 +634,7 @@ function updateFundraisers() {
   });
 }
 Template.index.onCreated(function() {
-  this.currentPage = new ReactiveVar('create');
+  this.currentPage = new ReactiveVar('home');
 });
 
 Template.index.helpers({

@@ -7,7 +7,6 @@ function addWebsite(funds) {
         console.log("Error: " + error);
         return;
       }
-      editing = false;
       $('.overlay').hide();
     });
   } else {

@@ -1,40 +1,48 @@
-.fullwidth-cover-inner {
-    position: relative;
-    height: 600px;
-    font-family: 'Source Sans Pro', sans-serif;
-    font-weight: 200;
-    letter-spacing: 1px;
-    text-align: center;
-    padding: 0;
-    color: #222;
-    background: url('../triangles.png');
-    background-attachment: scroll;
-    background-position: left bottom;
-    background-repeat: repeat-x;
-    width: 100%;
-    margin: 0;
-    overflow: hidden;
-    font-size: 1000000px;
+.full-width-cover {
+  background-image: url('../img/triangles.png');
+  bottom: 0;
+  position: absolute;
+  width: 100%;
 }
 
 .page-break {
-    height: 25px;
-    margin: 20px 0 0;
+  height: 25px;
+  margin: 20px 0 0;
 }
 
 .page-title {
-    position: relative;
-    display: inline-block;
-    margin-top: 140px;
-    margin-bottom: 40px;
+  z-index: 10;
+  opacity: 1;
+  color: white;
+  text-align: center;
+  padding-bottom: 250px;
+}
 
+.page-title p {
+  font-size: 40px;
+  text-shadow: 1px 1px 1px black;
 }
 
 .fullwidth-cover-image {
-    background-size: cover;
-    background-attachment: fixed;
-    background-position: 50% 10%;
-    background-repeat: no-repeat;
-    background-image: url(../charity.jpg);
+  background-size: cover;
+  background-attachment: fixed;
+  background-position: 50% 10%;
+  background-repeat: no-repeat;
+  background-image: url('../img/banner.jpg');
+  position: absolute;
+  left: 0;
+  width: 100%;
+  z-index: -1;
+  height: 500px;
+  opacity: 0.8;
+}
+
+.about {
+  padding-top: 520px;
+}
+
+.about p {
+  font-size: 20px;
+  line-height: 1.5;
 }
 

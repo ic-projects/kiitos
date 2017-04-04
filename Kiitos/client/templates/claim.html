@@ -1,11 +1,13 @@
 <template name="claim">
   <h1>Claim Kiitos</h1>
-  <form method="POST">
-    <div class="input-group">
-      <span class="legend">Your Website URL</span>
-      <input type="text" id="websiteAddress" placeholder="Enter your website address">
+  <p>If you are the website owner, to claim the funds raised for you simply create a "address.kiitos" file in the root directory. This file should contain your ethereum wallet address as a string like "0xf877a551b354a18f689676ef702e7fcedee56ae3". It's that simple!</p>
+  <form class="form-horizontal">
+    <div class="form-group">
+      <label for="contributionName" class="col-sm-2 control-label">Your Website URL</label>
+      <div class="col-sm-10">
+        <input type="text" class="form-control" id="name" placeholder="Enter a website address" required>
+      </div>
     </div>
-
-    <input type="button" value="Submit" id="submitClaim">
+    <input type="button" value="Submit" class="btn btn-success" id="submitClaim" style="float:right">
   </form>
 </template>

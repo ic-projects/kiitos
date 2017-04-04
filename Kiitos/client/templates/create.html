@@ -1,7 +1,6 @@
 <template name="create">
   <div class="container">
     <h1>Create a New Kiitos Fundraiser</h1>
-    <br>
     <form method="POST">
       <form class="form-horizontal">
         <div class="form-group">
@@ -15,10 +14,10 @@
         <div class="form-group">
           <label class="col-sm-2 control-label">Charities</label>
           <div class="col-sm-6">
-            <input type="text" size="30" class="form-control" id="urlInput" placeholder="A http link to the charity" required>
+            <input type="text" size="30" class="form-control" id="urlInput" placeholder="Charity http(s) link" required>
           </div>
           <div class="col-sm-2">
-            <input type="number" size="10" class="form-control" id="percentInput" placeholder="Charity percentage" max="100" min="1">
+            <input type="number" size="10" class="form-control" id="percentInput" placeholder="Percentage" max="100" min="1">
           </div>
           <div class="col-sm-2">
             <input type="button" size="10" class="form-control btn-primary" value="Add" id="submitAdd">

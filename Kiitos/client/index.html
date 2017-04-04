@@ -18,12 +18,17 @@
 
 <template name="index">
   <nav>
-    <ul>
-      <li data-template="home" class="active">Home</li>
-      <li data-template="create">Create a New Kiitos Fundraiser</li>
-      <li data-template="contribute">Give Kiitos</li>
-      <li data-template="claim" class="last">Claim Kiitos</li>
-    </ul>
+    <div class="container">
+      <a href="/"><img src="../img/kiitos.png"><span>Kiitos</span></a>
+      <ul>
+        <li data-template="home" class="active">Home</li>
+        <li data-template="create">Create a New Kiitos Fundraiser</li>
+        <li data-template="contribute">Give Kiitos</li>
+        <li data-template="claim" class="last">Claim Kiitos</li>
+      </ul>
+    </div>
   </nav>
-  {{> Template.dynamic template=page}}
+  <div class="container">
+    {{> Template.dynamic template=page}}
+  </div>
 </template>

@@ -37,5 +37,6 @@ function contribute(id, name, message, amount) {
       return;
     }
     $('.overlay').hide();
+    $('#contributeModal').modal('hide');
   });
 }
